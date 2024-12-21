@@ -611,6 +611,23 @@ static CYTHON_INLINE float __PYX_NAN() {
 #include <stdio.h>
 #include "numpy/arrayobject.h"
 #include "numpy/ufuncobject.h"
+
+#if defined(NPY_2_0_API_VERSION) && (NPY_API_VERSION >= NPY_2_0_API_VERSION)
+
+#define SUBARRAY(p_array_d) (PyDataType_SUBARRAY(p_array_d))
+#define NAMES(p_array_d) (PyDataType_NAMES(p_array_d))
+#define FIELDS(p_array_d) (PyDataType_FIELDS(p_array_d))
+#define ELSIZE(p_array_d) (PyDataType_ELSIZE(p_array_d))
+
+#else
+
+#define SUBARRAY(p_array_d) (p_array_d->subarray)
+#define NAMES(p_array_d) (p_array_d->names)
+#define FIELDS(p_array_d) (p_array_d->fields)
+#define ELSIZE(p_array_d) (p_array_d->elsize)
+
+#endif
+
 #ifdef _OPENMP
 #include <omp.h>
 #endif /* _OPENMP */
@@ -5608,8 +5625,8 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_PyDataType_SHAPE(PyArray_Descr *__
  *         return ()
  */
     __Pyx_XDECREF(__pyx_r);
-    __Pyx_INCREF(((PyObject*)__pyx_v_d->subarray->shape));
-    __pyx_r = ((PyObject*)__pyx_v_d->subarray->shape);
+    __Pyx_INCREF(SUBARRAY(__pyx_v_d)->shape);
+    __pyx_r = SUBARRAY(__pyx_v_d)->shape;
     goto __pyx_L0;
 
     /* "../../.virtualenvs/scraping/lib/python3.7/site-packages/Cython/Includes/numpy/__init__.pxd":837
@@ -5704,11 +5721,12 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
  *         fields = descr.fields[childname]
  *         child, new_offset = fields
  */
-  if (unlikely(__pyx_v_descr->names == Py_None)) {
+
+  if (unlikely(NAMES(__pyx_v_descr) == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
     __PYX_ERR(1, 851, __pyx_L1_error)
   }
-  __pyx_t_1 = __pyx_v_descr->names; __Pyx_INCREF(__pyx_t_1); __pyx_t_2 = 0;
+  __pyx_t_1 = NAMES(__pyx_v_descr); __Pyx_INCREF(__pyx_t_1); __pyx_t_2 = 0;
   for (;;) {
     if (__pyx_t_2 >= PyTuple_GET_SIZE(__pyx_t_1)) break;
     #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
@@ -5727,11 +5745,11 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
  *         child, new_offset = fields
  * 
  */
-    if (unlikely(__pyx_v_descr->fields == Py_None)) {
+    if (unlikely(FIELDS(__pyx_v_descr) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
       __PYX_ERR(1, 852, __pyx_L1_error)
     }
-    __pyx_t_3 = __Pyx_PyDict_GetItem(__pyx_v_descr->fields, __pyx_v_childname); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 852, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyDict_GetItem(FIELDS(__pyx_v_descr), __pyx_v_childname); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 852, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     if (!(likely(PyTuple_CheckExact(__pyx_t_3))||((__pyx_t_3) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "tuple", Py_TYPE(__pyx_t_3)->tp_name), 0))) __PYX_ERR(1, 852, __pyx_L1_error)
     __Pyx_XDECREF_SET(__pyx_v_fields, ((PyObject*)__pyx_t_3));
@@ -5932,7 +5950,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
  *         if not PyDataType_HASFIELDS(child):
  */
     __pyx_t_8 = 0;
-    (__pyx_v_offset[__pyx_t_8]) = ((__pyx_v_offset[__pyx_t_8]) + __pyx_v_child->elsize);
+    (__pyx_v_offset[__pyx_t_8]) = ((__pyx_v_offset[__pyx_t_8]) + ELSIZE(__pyx_v_child));
 
     /* "../../.virtualenvs/scraping/lib/python3.7/site-packages/Cython/Includes/numpy/__init__.pxd":877
  *         offset[0] += child.itemsize
