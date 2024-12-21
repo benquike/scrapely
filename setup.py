@@ -16,10 +16,16 @@ except ImportError:
 extensions = [
     Extension("scrapely._htmlpage",
               ["scrapely/_htmlpage%s" % ext],
-              include_dirs=include_dirs),
+              include_dirs=include_dirs,
+              extra_compile_args=[
+                  '-Wno-deprecated-declarations',
+                  '-Wno-int-conversion']),
     Extension("scrapely.extraction._similarity",
               ["scrapely/extraction/_similarity%s" % ext],
-              include_dirs=include_dirs),
+              include_dirs=include_dirs,
+              extra_compile_args=[
+                  '-Wno-deprecated-declarations',
+                  '-Wno-int-conversion']),
 ]
 if USE_CYTHON and not IS_PYPY:
     from Cython.Build import cythonize
